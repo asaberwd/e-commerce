@@ -1,6 +1,6 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose' 
 const Schema = mongoose.Schema
-const Address = require('./shipadd')
+import Address from './shipAdd'
 
 
 const userSchema = new Schema({
