@@ -15,7 +15,6 @@ const userSchema = new Schema({
     phone : {
         type : String,
         trim : true
-
     },
     email:{
         type:String,
@@ -32,10 +31,14 @@ const userSchema = new Schema({
         type:Date,
         default : Date.now()
     },
+    orders : [{
+        type:Schema.Types.ObjectId ,
+        ref :'Order',
+    }],
     shipaddress : [Address]
 
 });
 
 const User = mongoose.model('User', userSchema);
 
-module.exports = User ;
+export default User 
