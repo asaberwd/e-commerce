@@ -1,9 +1,17 @@
 import mongoose from './server/connection'
-//const {mongoose} = require('./server/connection');
 import express from 'express'
-const app = express();
-const port = process.env.Port || 8080 ; 
+import bodyParser from 'body-parser'
+const app = express()
+import router from './server/routes/routes.mjs'
+const port = process.env.Port || 8080 
 
+
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+
+app.use(router);
+
+app.use(express.static('./public'));
 
 
 
