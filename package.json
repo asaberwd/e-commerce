@@ -4,7 +4,7 @@
   "description": "e-commerce using MERN stack",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node --experimental-modules app.mjs"
   },
   "author": "ahmed saber",
   "license": "ISC",

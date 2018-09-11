@@ -33,7 +33,7 @@ const orderPro = new Schema({
         type:Schema.Types.ObjectId,
         ref:'Product',
     },
-    product : {
+    order : {
         type:Schema.Types.ObjectId,
         ref:'Order',
     },

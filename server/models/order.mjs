@@ -5,7 +5,7 @@ import Address from './shipAdd'
 
 
 const orderSchema = new Schema({
-    orderNumber :{
+    orderId :{
         type : Number,
     },
     done :{

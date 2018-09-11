@@ -1,13 +1,20 @@
 import mongoose from 'mongoose'
-Schema = mongoose.Schema
+const Schema = mongoose.Schema
+import Counter from './counter.mjs'
+
 
 const productSchema = new Schema({
-    id : {
+   proId : {
         type:Number,
+        unique : true,
     },
     productName : {
         type : String ,
         required : true,
+    },
+    slug:{
+        type:String,
+        unique:true,
     },
     prodDescription : {
         type : String ,
@@ -67,6 +74,52 @@ const productSchema = new Schema({
 
 })
 
+productSchema.pre('save', async function() {
+    var k = this ;
+    await Counter.findOne({coll : 'pro'})
+    .then((pro)=>{
+        console.log('hi from pre save')
+        k.proId = pro.count
+
+    })
+    .catch((err)=>console.log(`from pre error is : ${err}`))
+});
+
+productSchema.post('save', function() {
+    Counter.findOneAndUpdate({coll : 'pro'}, {$inc:{count : 1}},{new:true} )
+    .then((cou)=>{
+        console.log('hi from post save')
+        console.log(`counter became : ${cou.count}`)
+    })
+    .catch((err)=>console.log(`error is : ${err}`))
+});
+
+
 const Product = mongoose.model('Product', productSchema );
 
 export default Product
+
+
+
+
+/*
+
+productSchema.pre('save', function() {
+    Counter.findOne({coll : 'pro'})
+    .then((pro)=>{
+        console.log('hi from pre save')
+        productSchema.id = pro.count + 1
+    })
+    .catch((err)=>console.log(`from pre error is : ${err}`))
+});
+
+productSchema.post('save', function() {
+    Counter.findOneAndUpdate({name : 'pro'}, {$inc:{count : 1}},{new:true} )
+    .then((cou)=>{
+        console.log('hi from post save')
+        console.log(`counter became : ${cou.count}`)
+    })
+    .catch((err)=>console.log(`error is : ${err}`))
+});
+
+*/
