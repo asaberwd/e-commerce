@@ -1,4 +1,4 @@
-import mongoose from './server/connection'
+import mongoose from './server/connection.mjs'
 import express from 'express'
 import bodyParser from 'body-parser'
 const app = express()

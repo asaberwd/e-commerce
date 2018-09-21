@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 const Schema = mongoose.Schema
 import Counter from './counter.mjs'
+import prepost from './pre-post.mjs'
 
 
 const newCategory = new Schema({
@@ -33,25 +34,9 @@ const newCategory = new Schema({
 });
 
 
-newCategory.pre('save', async function() {
-    var k = this ;
-    await Counter.findOne({coll : 'cat'})
-    .then((cat)=>{
-        console.log('hi from pre save')
-        k.catId = cat.count
+prepost.myPre(newCategory, 'cat', 'catId')
+prepost.myPost(newCategory, 'cat')
 
-    })
-    .catch((err)=>console.log(`from pre error is : ${err}`))
-});
-
-newCategory.post('save', function() {
-    Counter.findOneAndUpdate({coll : 'cat'}, {$inc:{count : 1}},{new:true} )
-    .then((cou)=>{
-        console.log('hi from post save')
-        console.log(`counter became : ${cou.count}`)
-    })
-    .catch((err)=>console.log(`error is : ${err}`))
-});
 
 
 const Category = mongoose.model('Category', newCategory);

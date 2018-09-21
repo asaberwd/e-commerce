@@ -19,4 +19,4 @@ const address = new Schema({
     }
 })
 
-module.exports = address ;
+export default address ;

@@ -37,7 +37,13 @@ const orderPro = new Schema({
         type:Schema.Types.ObjectId,
         ref:'Order',
     },
+    user : {
+        type:Schema.Types.ObjectId,
+        ref:'User',
+    },
 })
+
+
 
 const OrderPro = mongoose.model('OrderPro', orderPro)
 

@@ -1,6 +1,8 @@
 import mongoose from 'mongoose'
 const Schema = mongoose.Schema 
 import Address from './shipAdd'
+import prepost from './pre-post'
+
 
 
 
@@ -38,6 +40,11 @@ const orderSchema = new Schema({
     },
 
 });
+
+prepost.myPre(orderSchema , 'order' , 'orderId')
+
+prepost.myPost(orderSchema , 'order' )
+
 
 const Order = mongoose.model('Order', orderSchema);
 
