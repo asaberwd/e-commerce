@@ -46,8 +46,8 @@ const productSchema = new Schema({
     available :{
         type : Boolean,
     },
-    picture : {
-        type : String,
+    pictures : {
+        type : Array,
     },
     discount : {
         type : Number,
@@ -66,7 +66,7 @@ const productSchema = new Schema({
         type : Schema.Types.ObjectId,
         ref :'Order',
     }],
-    categoty :{
+    category :{
         type :Schema.Types.ObjectId,
         ref:'Category',
     },

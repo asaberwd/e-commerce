@@ -16,7 +16,7 @@ export default (email, subject, text)=>{
         from : 'koko@gmail.com',
         to : email,
         subject : subject,
-        text : text,
+        html : text,
         auth: {
             user: 'ahmedsaberwd@gmail.com',
             refreshToken: '1/mvyDw5m5Y6MTiqfvGwOLuJd4tKxzLn15OH8jXG_Wn2E',

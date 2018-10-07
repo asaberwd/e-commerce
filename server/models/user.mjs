@@ -1,8 +1,9 @@
 import mongoose from 'mongoose' 
 const Schema = mongoose.Schema
 import Address from './shipAdd'
-import Counter from './counter.mjs'
 import validator from 'validator'
+import prepost from './pre-post'
+
 
 
 
@@ -14,10 +15,13 @@ const userSchema = new Schema({
     firstName : {
         type : String,
         required : true,
+        trim:true,
     },
     lastName :{
         type : String,
-        required : true 
+        required : true,
+        trim:true,
+
     },
     phone : {
         type : String,
@@ -40,7 +44,12 @@ const userSchema = new Schema({
     },
     date:{
         type:Date,
-        default : Date.now()
+        default : Date.now,
+    },
+    state:{
+        type:String,
+        default: 'unverified',
+        trim : true,
     },
     orders : [{
         type:Schema.Types.ObjectId ,
@@ -51,26 +60,11 @@ const userSchema = new Schema({
 });
 
 
-userSchema.pre('save', async function() {
-    var k = this ;
-    await Counter.findOne({coll : 'user'})
-    .then((user)=>{
-        console.log('hi from pre save')
-        k.userId = user.count
+prepost.myPre(userSchema , 'user' , 'userId')
 
-    })
-    .catch((err)=>console.log(`from pre error is : ${err}`))
-});
+prepost.myPost(userSchema , 'user' )
 
 
-userSchema.post('save', function() {
-    Counter.findOneAndUpdate({coll : 'user'}, {$inc:{count : 1}},{new:true} )
-    .then((cou)=>{
-        console.log('hi from post save')
-        console.log(`counter became : ${cou.count}`)
-    })
-    .catch((err)=>console.log(`error is : ${err}`))
-});
 
 
 

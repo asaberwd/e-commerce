@@ -7,7 +7,7 @@ const authenticate = (req, res, next)=>{
     if(!token) return res.status(401).send('no token provided')
 
     jwt.verify(token , key.jwtKey , function(err, decoded){
-        if (err) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+        if (err) return res.status(500).send(`message: Failed to authenticate token. ${err}` );
 
         userToken.findOne({token})
         .then(doc=>{

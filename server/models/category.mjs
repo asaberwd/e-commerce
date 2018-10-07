@@ -27,10 +27,10 @@ const newCategory = new Schema({
         type : Boolean,
         default : true,
     },
-    product :{
+    product :[{
         type: Schema.Types.ObjectId,
         ref: 'Product',
-    }
+    }]
 });
 
 
