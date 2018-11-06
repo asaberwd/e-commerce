@@ -1,1 +1,1 @@
-web : node --experimental-modules app.mjs
+worker : node --experimental-modules app.mjs
