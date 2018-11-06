@@ -7,7 +7,7 @@
     "front-install": "npm install --prefix admin",
     "front": "npm start --prefix admin",
     "dev": "concurrently \"npm run start\"  \"npm run front\" ",
-    "start": "nodemon --experimental-modules app.mjs"
+    "start": "node --experimental-modules app.mjs"
   },
   "author": "ahmed saber",
   "license": "ISC",
