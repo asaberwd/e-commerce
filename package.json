@@ -2,12 +2,12 @@
   "name": "e-commerce",
   "version": "1.0.0",
   "description": "e-commerce using MERN stack",
-  "main": "node --experimental-modules app.mjs",
+  "main": "node app.mjs --experimental-modules",
   "scripts": {
     "front-install": "npm install --prefix admin",
     "front": "npm start --prefix admin",
     "dev": "concurrently \"npm run start\"  \"npm run front\" ",
-    "start": "node --experimental-modules app.mjs"
+    "start": "node app.mjs --experimental-modules"
   },
   "author": "ahmed saber",
   "license": "ISC",
