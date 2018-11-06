@@ -4,29 +4,35 @@ import jwt from 'jsonwebtoken'
 import Admin from './../server/models/admin.mjs'
 
 
-const authenticate = (req, res, next)=>{
+const authenticate = async (req, res, next)=>{
     let token = req.headers['x-access-token']
-    if(!token) return res.status(401).send('no token provided')
+    if(!token || token === null || token === undefined) return res.status(401).send('no token provided')
 
-    jwt.verify(token , key.jwtKey , function(err, decoded){
-        if (err) return res.status(500).send(`message: Failed to authenticate token. ${err}` );
 
-        userToken.findOne({token})
-        .then(doc=>{
-            if(!doc) return res.status(401).json('session do not exist')
-            if(decoded.exp < doc.expiresIn) return res.status(401).json('session expired')
+        try{ 
+            let decoded = await jwt.verify(token , key.jwtKey)
 
-            res.locals.adminId = doc.user
 
-            Admin.findById(doc.user)
-            .then(admin=>{
-                if(!admin ) return res.status(401).json('you are not authorized to be here')
-                res.locals.role = admin.role
-            })
+        if (!decoded) return res.status(500).send(`message: Failed to authenticate token. ${err}` );
+
+        let findToken = await userToken.findOne({token})
+
+            if(!findToken) return res.status(401).json('session do not exist')
+            if(decoded.exp < findToken.expiresIn) return res.status(401).json('session expired')
+
+            res.locals.adminId = findToken.user
+
+        let findAdminById = await Admin.findById(findToken.user)
+                if(!findAdminById ) return res.status(401).json('you are not authorized to be here')
+                res.locals.role = findAdminById.role
+            
             next()
-        })
-        .catch(err=>console.log(`error authenticate : ${err}`))
-    })
+        } catch(err) {
+             res.status(503).json('jwt expired')
+             console.log(`error authenticate : ${err}`)
+
+             }
+    
 
 }
 

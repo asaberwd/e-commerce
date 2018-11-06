@@ -1,4 +1,6 @@
 import {Link} from './../routes'
+import { connect } from 'react-redux'
+import { addNewItem } from './../actions/cartActions'
 
 
 class Product extends React.Component {
@@ -16,13 +18,7 @@ class Product extends React.Component {
     }
 
  componentDidMount(){
-    let pnu = JSON.parse( localStorage.getItem('cart') )
-     
-    if(pnu) {
-        this.setState({
-            cartItems : pnu
-        })
-    }
+   
  }    
 
 
@@ -30,23 +26,12 @@ class Product extends React.Component {
 
      onClick(e){
         e.preventDefault()
-        let incart = localStorage.getItem('cart')
-        if(incart){
-            let prst = this.state.cartItems
-            prst.push(this.state.pro)
-            this.setState({
-                cart : prst
-            })
-            localStorage.setItem('cart', JSON.stringify(this.state.cartItems) )
+        let pro = {_id:this.props.pro._id, price : this.props.pro.unitPrice,
+            pic : this.props.pro.pictures[0], qua : 1 , pro : this.props.pro.productName,
+            total : (this.props.pro.unitPrice * 1) }
 
-            return 
-        }
+        this.props.addItem(pro)
 
-        localStorage.setItem('cart',JSON.stringify([this.state.pro]))
-        let arr = localStorage.getItem('cart')
-        this.setState({
-            cart : arr
-        })
      }
 
 
@@ -54,11 +39,12 @@ class Product extends React.Component {
     render(){
         return(
             <div className="col-md-4 text-center">
-            <Link route="pro" params={{ slug: this.props.pro.slug }}>
             <div className="product-entry">
-
+            
+                 <Link route="singleProduct" params={{ slug: this.props.pro.slug }}>
                 <div className="product-img" style={{ backgroundImage : `url(${this.props.pro.pictures[0]})`}}>
-                    <p className="tag"><span className="new">{this.props.pro.category.catName}</span></p>
+                <p className="tag"><span className="new">{ this.props.pro.category ? this.props.pro.category.catName : this.props.pro.slug}</span></p>
+
                     <div className="cart">
                         <p>
                             <span className="addtocart" ><a href="" onClick={this.onClick}><i className="icon-shopping-cart"></i></a></span> 
@@ -68,6 +54,7 @@ class Product extends React.Component {
                         </p>
                     </div>
                 </div>
+                </Link>
 
                 <div className="desc">
                     <h3>{this.props.pro.productName}</h3>
@@ -75,7 +62,6 @@ class Product extends React.Component {
                 </div>
 
             </div>
-            </Link>
             </div>
 
 
@@ -84,4 +70,11 @@ class Product extends React.Component {
     }
 }
 
-export default Product
+
+
+
+const mapDispatchToProps =(dispatch)=>({
+    addItem : (item)=>(dispatch(addNewItem(item)))
+  })
+
+export default connect (null, mapDispatchToProps) (Product)

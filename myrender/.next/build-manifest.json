@@ -15,11 +15,7 @@
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/pro": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
-    "/checkOut": [
+    "/singleProduct": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],

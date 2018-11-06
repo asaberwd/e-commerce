@@ -1,3 +1,4 @@
+import {Link} from './../../routes'
 
 
 export default ()=>{
@@ -8,7 +9,7 @@ export default ()=>{
 			<div className="container">
 				<div className="row row-pb-md">
 
-					<div className="col-md-3 colorlib-widget">
+					<div className="col-md-4 colorlib-widget">
 						<h4>About Store</h4>
 						<p>Facilis ipsum reprehenderit nemo molestias. Aut cum mollitia reprehenderit. Eos cumque dicta adipisci 
 							architecto culpa amet.</p>
@@ -27,8 +28,7 @@ export default ()=>{
 								<li><a href="#">Contact</a></li>
 								<li><a href="#">Returns/Exchange</a></li>
 								<li><a href="#">Gift Voucher</a></li>
-								<li><a href="#">Wishlist</a></li>
-								<li><a href="#">Special</a></li>
+								<li><Link route="wishlist.html"><a>Wishlist</a></Link></li>
 								<li><a href="#">Customer Services</a></li>
 								<li><a href="#">Site maps</a></li>
 							</ul>
@@ -39,25 +39,17 @@ export default ()=>{
 						<h4>Information</h4>
 						
 							<ul className="colorlib-footer-links">
-								<li><a href="#">About us</a></li>
+								<li><Link route="about.html"><a >About us</a></Link></li>
 								<li><a href="#">Delivery Information</a></li>
-								<li><a href="#">Privacy Policy</a></li>
+								<li><Link route="privacy.html"><a>Privacy Policy</a></Link></li>
 								<li><a href="#">Support</a></li>
 								<li><a href="#">Order Tracking</a></li>
 							</ul>
 						
 					</div>
 
-					<div className="col-md-2">
-						<h4>News</h4>
-						<ul className="colorlib-footer-links">
-							<li><a href="blog.html">Blog</a></li>
-							<li><a href="#">Press</a></li>
-							<li><a href="#">Exhibitions</a></li>
-						</ul>
-					</div>
 
-					<div className="col-md-3">
+					<div className="col-md-4">
 						<h4>Contact Information</h4>
 						<ul className="colorlib-footer-links">
 							<li>291 South 21th Street, <br/> Suite 721 New York NY 10016</li>

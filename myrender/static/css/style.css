@@ -1679,6 +1679,7 @@ input[type="text"] {
   padding: 14px; }
 
 #colorlib-footer {
+  margin-top: 25px;
   padding: 7em 0 0 0;
   border-top: 2px solid #ffc107;
  }
@@ -2116,3 +2117,14 @@ input[type="text"] {
 
 .js .animate-box {
   opacity: 0; }
+
+
+  /* my styles */
+
+  .products-sec {
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
+
+  /* search bar styling */
+   

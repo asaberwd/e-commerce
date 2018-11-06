@@ -1,11 +1,12 @@
 import mongoose from 'mongoose'
 const Schema = mongoose.Schema
-import prepost from './pre-post'
+import shortId from 'nanoid/generate'
 
 const productSchema = new Schema({
    proId : {
-        type:Number,
+        type:String,
         unique : true,
+        default: shortId('1234567890abcdefghimnABCDEFGHIMNOY',7)  //characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@')
     },
     productName : {
         type : String ,
@@ -76,9 +77,9 @@ const productSchema = new Schema({
 
 
 
-prepost.myPre(productSchema , 'pro' , 'proId')
+//prepost.myPre(productSchema , 'pro' , 'proId')
 
-prepost.myPost(productSchema , 'pro' )
+//prepost.myPost(productSchema , 'pro' )
 
 
 

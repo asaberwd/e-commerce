@@ -1,6 +1,7 @@
 import Layout from './../component/layout/layout.js'
 import details from './../../details'
-import {Link} from './../routes'
+
+import {connect} from 'react-redux'
 
 class About extends React.Component{
 
@@ -12,9 +13,6 @@ class About extends React.Component{
 render(){ 
 	return (
 	<Layout>
-		<div className="container">
-			<h1>{details.title}</h1>
-			<p>{details.describtion}</p>
 
 				<div className="row">
 					<div className="about-flex">
@@ -64,11 +62,10 @@ render(){
 						</div>
 					</div>
 				</div>		
-		</div>
 	</Layout> )
 }
 
 }
 
 
-export default About
+export default connect()(About)

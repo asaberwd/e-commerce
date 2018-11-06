@@ -1,7 +1,5 @@
 import mongoose from 'mongoose'
 const Schema = mongoose.Schema
-import Counter from './counter.mjs'
-import prepost from './pre-post.mjs'
 
 
 const newCategory = new Schema({
@@ -14,7 +12,7 @@ const newCategory = new Schema({
         unique : true,
     },
     catId :{
-        type:Number,
+        type:String,
         unique : true,
     },
     description : {
@@ -27,6 +25,10 @@ const newCategory = new Schema({
         type : Boolean,
         default : true,
     },
+    nOfProducts : {
+        type : Number,
+        default: 0
+    },
     product :[{
         type: Schema.Types.ObjectId,
         ref: 'Product',
@@ -34,8 +36,8 @@ const newCategory = new Schema({
 });
 
 
-prepost.myPre(newCategory, 'cat', 'catId')
-prepost.myPost(newCategory, 'cat')
+//prepost.myPre(newCategory, 'cat', 'catId')
+//prepost.myPost(newCategory, 'cat')
 
 
 

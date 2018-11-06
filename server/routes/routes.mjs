@@ -2,17 +2,10 @@ import express from 'express'
 const router = express.Router()
 
 import Product from './../models/product.mjs'
-import Category from './../models/category.mjs'
-import Counter from './../models/counter.mjs'
 import User from './../models/user.mjs'
-import key from './../../config/keys.mjs'
 import orderProduct from './../models/orderProduct.mjs'
-import UserToken from './../models/userToken.mjs'
-import Admin from './../models/admin.mjs'
 
 
-import slugify from './../../helpers/slugify.mjs'
-import sendMail from './../../helpers/sendMail'
 import authen from './../../middleware/authen.mjs'
 import adminAuth from './../../middleware/adminAuth'
 import upload from './../../middleware/uploadImg'
@@ -22,11 +15,13 @@ import info from './../../details.mjs'
 
 
 
-import bcrypt from 'bcryptjs' 
-import validator from 'validator'
-import jwt from 'jsonwebtoken'
 
 
+import {addnewAdmin, adminLogin, addNewProduct, editProduct, showAllProducts, showSingleCategory, showProductBySlug,
+     deleteProduct, addNewCategory, showCategoriesByAdmin, getCatsByCatId, getProductsByCategory,
+     deleteCatByCatId, updatePro } from './bus'
+
+import { viewAllProducts, showAllCats, userLogin, registerNewUser } from './user-bus'
 
 
 
@@ -39,22 +34,8 @@ import jwt from 'jsonwebtoken'
 // type   post
 // desc   add new admin
 
-router.post('/api/newadmin', adminAuth,  (req, res)=>{
-    if(res.locals.role !== 'admin') return res.status(401).json('you are not admin so not authorized to be here')
-    let hashedpass = bcrypt.hashSync(req.body.password.trim(), 10)
-    let newAdmin = new Admin({
-        email : req.body.email,
-        password : hashedpass,
-        role : req.body.role,
-    })
-
-    newAdmin.save()
-    .then(newadmin =>{
-        console.log(newadmin)
-        res.json(newadmin)
-    })
-    .catch(err=>{console.log(err)})
-
+router.post('/api/newadmin', adminAuth, (req, res)=>{
+    addnewAdmin(req, res)
 })
 
 
@@ -63,39 +44,8 @@ router.post('/api/newadmin', adminAuth,  (req, res)=>{
 
 
 router.post('/api/admin/login' , (req, res)=>{
-    // find admin by email
-    Admin.findOne({email : req.body.email})
-    .then((admin)=>{
-        if(!admin) return res.status(401).send({auth : false ,error :'admin not found'})
-        // compare entered password with stored one
-        bcrypt.compare(req.body.password, admin.password)
-        .then((matched)=>{
-            if(!matched) return res.status(401).send({auth : false ,error :'email and password are not matched'})
-
-            //generate token for this login
-            let token = jwt.sign({id : admin._id , email : admin.email}, key.jwtKey, { expiresIn: 86400 })
-            let tokenDecode = jwt.decode(token)
-
-            //generate new userToken document
-            let newToken = new UserToken({
-                token,
-                user : admin._id,
-                createdAt : tokenDecode.iat ,
-                expiresIn : tokenDecode.exp
-            })
-            newToken.save()
-            .then((tokenAdded)=>{
-                console.log(`token added : ${tokenAdded.token}`)
-            })
-            
-            res.send({ auth : true, token  })
-        })
-    })
-    .catch((e)=>{console.log(e);res.send('error')})
+    adminLogin(req,res)
 })
-
-
-
 
 
 
@@ -104,38 +54,7 @@ router.post('/api/admin/login' , (req, res)=>{
 // desc   add new product   
 
 router.post('/api/addproduct', upload.array('images', 4), (req, res)=>{
-    const { proname,  price,  desc,  que,  weight, discount, color, size, supplier, note, category } = req.body
-
-    let imgs = []
-    req.files.map(img =>{
-        let imgurl = req.protocol + '://' + req.hostname + ':8080'+ '/uploads/' + img.filename
-       return imgs.push(imgurl)
-    })
-
-    let newpro = new Product({
-        productName : proname,
-        slug : slugify(proname),
-        prodDescription : desc,
-        unitPrice : price,
-        quantity : que,
-        pictures: imgs,
-        category,
-        weight,
-        color,
-        size,
-        discount,
-        note,
-        supplier,
-    });
-   
-    newpro.save()
-    .then((pro)=>{
-        console.log(pro)
-        res.json('product added')
-    })
-    .catch((err)=>{
-        res.status(404).json('error')
-        console.log(`error is : ${err}`)})
+    addNewProduct(req,res)
 
 })
 
@@ -146,39 +65,7 @@ router.post('/api/addproduct', upload.array('images', 4), (req, res)=>{
 // desc   edit product
 
 router.patch('/api/product/:id', (req, res)=>{
-    Product.findOneAndUpdate( {proId : req.params.id},{$set: req.body} , {new : true})
-    .then((pro)=>{
-        if(!pro) return res.status(404).json('product is not exist')
-
-        // update orderproducts ( or cart ) if price updated
-
-        if(req.body.unitPrice){
-
-            //find all instances of product which in cart and order is not submitted
-            orderProduct.find({product :pro._id , order : null })
-            .then((orderpro)=>{
-                //loop all instances of product in cart and update price for each one
-                orderpro.map((x)=>{
-                    orderProduct.findByIdAndUpdate(x._id , {$set : {price : req.body.unitPrice}}, {new : true})
-                    .then((re)=>{ 
-                        //update total after updating price
-                        orderProduct.findByIdAndUpdate(re._id, {$set:{total:(re.price * re.quantity)- re.discount}}, {new:true})
-                        .then((totupdate)=>{console.log(totupdate.total)})
-                        console.log(re.price)
-                    })
-                })
-            })
-        }
-
-        res.json('product updated succesfully')
-        console.log('product updated')
-        console.log(res.locals.userId)
-
-    })
-    .catch((err)=>{
-        res.status(404).json('error updating product')
-        console.log(`error updating product : ${err}`)})
-
+    editProduct(req, res)
 })
 
 
@@ -186,17 +73,8 @@ router.patch('/api/product/:id', (req, res)=>{
 // type  get
 // desc  show all products
 
-router.get('/api/products', (req, res)=>{
-    Product.find().sort({_id:-1})
-    .populate('category')
-    .then((pros)=>{
-        res.json(pros)
-        console.log('products fetching ...')
-    })
-    .catch((err)=>{
-        res.status(404).json('error showing products')
-    })
-
+router.get('/api/products', adminAuth,(req, res)=>{
+    showAllProducts(req,res)
 })
 
 
@@ -206,14 +84,7 @@ router.get('/api/products', (req, res)=>{
 
 
 router.get('/api/product/:id', (req, res)=>{
-    Product.findOne({proId:req.params.id})
-    .then((pro)=>{
-        res.json(pro)
-        console.log(pro)
-    })
-    .catch(()=>{
-        res.status(404).json('error showing product')
-    })
+    showSingleCategory(req, res)
 })
 
 
@@ -222,15 +93,8 @@ router.get('/api/product/:id', (req, res)=>{
 
 
 router.get('/api/products/:slug', (req, res)=>{
-    Product.findOne({slug:req.params.slug})
-    .then((pro)=>{
-        res.json(pro)
-        console.log(pro)
-    })
-    .catch((err)=>{
-        res.status(404).json(`error showing product ${err}`)
-        console.log(err)
-    })
+    showProductBySlug(req, res)
+    
 })
 
 
@@ -238,17 +102,7 @@ router.get('/api/products/:slug', (req, res)=>{
 // desc  delete specific product
 
 router.delete('/api/product/:id', (req, res)=>{
-    let id = req.params.id 
-    Product.findOneAndDelete({proId : id})
-    .then((pro)=>{
-        if(!pro) return res.status(404).json('product is not exist')
-        res.json(`product ${pro.productName} was deleted`)
-    })
-    .catch((err)=>{
-        res.status(404).json('product id not found')
-        console.log(err)
-    })
-
+    deleteProduct(req, res)
 })
 
 
@@ -260,142 +114,84 @@ router.delete('/api/product/:id', (req, res)=>{
 // type   post
 // desc   add new category
 
-router.post('/api/addcategory', (req, res)=>{
-    
-    let newcat = new Category({
-        catName : req.body.name,
-        slug : slugify(req.body.name),
-        description : req.body.desc,
-        active : req.body.active,
-    });
-
-    newcat.save()
-    .then((cat)=>{
-        console.log(cat)
-        res.json('category added')
-    })
-    .catch((err)=>console.log(`error posting new category is : ${err}`))
+router.post('/api/addcategory', adminAuth, (req, res)=>{
+    addNewCategory(req, res)
 })
 
 
 // type   get
 // desc   show all categories
 
-router.get('/api/categories', (req, res)=>{
-    
-    Category.find().sort({_id:-1})
-    .then((cats)=>{
-        res.json(cats)
-        console.log('showing categories')
-    })
-    .catch((err)=>{
-        res.status(404).json('error getting cats')
-        console.log(`error showing all cats is : ${err}`)})
+router.get('/api/categories', adminAuth, (req, res)=>{
+    showCategoriesByAdmin(req,res)
 })
 
 
 // type  get
 // desc  get specific category by catId
 
-router.get('/api/categories/:id', (req, res)=>{
-    
-    Category.findOne({catId : req.params.id})
-    .then((cat)=>{
-        if(!cat) return res.status(404).json('category not found')
-        res.json(cat)
-        console.log(cat)
-    })
-    .catch((err)=>{
-        res.status(401).json('error getting category')
-        console.log(`error showing category is : ${err}`)})
+router.get('/api/category/:id', adminAuth, (req, res)=>{
+    getCatsByCatId(req, res)
 })
+
+
+// type  get 
+// desc  find all products in specific category
+
+router.get('/api/products/category/:id', async (req, res)=>{
+    getProductsByCategory(req, res)
+})
+
+
 
 
 // type  patch
 // desc  update category
 
-router.patch('/api/category/:id', (req, res)=>{
-    Category.findOneAndUpdate({catId : req.params.id}, {$set : req.body}, {new : true})
-    .then((cat)=>{
-        if(!cat) return res.status(404).json('category is not exist')
-
-        res.json(cat)
-        console.log(cat)
-    })
-    .catch((err)=>{
-        res.status(401).json('error updating category')
-        console.log(`error updating category is : ${err}`)})
-
-
+router.patch('/api/category/:id', adminAuth, (req, res)=>{
+    
+    updatePro(req, res)
 })
 
 
 // type    delete 
 // desc    delete specific category
 
-router.delete('/api/category/:id', (req, res)=>{
-    Category.findOneAndDelete({catId : req.params.id})
-    .then((del)=>{
-        if(!del) return res.status(404).json('category is not exist')
-
-        res.json(del)
-        console.log(del)
-    })
-    .catch((err)=>{
-        res.status(401).json('error deleting category')
-        console.log(`error deleting category is : ${err}`)})
+router.delete('/api/category/:id', adminAuth, (req, res)=>{
+    deleteCatByCatId(req, res)
     })
 
 
 
 // -------- user routes --------
 
+
+
+// type  get
+// desc  show all products to users
+
+router.get('/api/viewproducts', (req, res)=>{
+    
+    viewAllProducts(req, res)
+})
+
+
+// type   get
+// desc   show all categories
+
+router.get('/api/viewcategories', (req, res)=>{
+    
+    showAllCats(req, res)
+})
+
+
+
 // type  post
 // desc  add new user
 
 router.post('/api/newuser', (req, res)=>{
 
-    //check all required fields are not empty
-    if(req.body.fName.replace(/ /g,'').length === 0 || req.body.pass.replace(/ /g,'').length === 0 ||
-       req.body.lName.replace(/ /g,'').length === 0 || req.body.email.replace(/ /g,'').length === 0 )
-    return  res.status(406).json('required fields are empty')
-
-   if(!validator.isEmail(req.body.email)) return  res.status(406).json('email is not valid')
-
-    //check if email already exist
-    User.findOne({email : req.body.email})
-    .then((olduser)=>{
-        if(olduser) return res.status(400).json('email already exist')
-        
-        //hashing password
-        let hashpassword = bcrypt.hashSync(req.body.pass.trim(), 8)
-
-        let newUser = new User({
-            firstName : req.body.fName,
-            lastName : req.body.lName,
-            email : req.body.email,
-            phone : req.body.phone,
-            password : hashpassword
-        })
-        // creating jwt token
-        //let token = jwt.sign({id : newUser._id , email : newUser.email}, key.jwtKey, { expiresIn: 86400 } )
-
-        
-        newUser.save()
-        .then((user)=>{
-            res.json('new user created')
-            console.log(user)
-            let hashedId = bcrypt.hashSync(user._id.toString(), 8)
-            sendMail(user.email, 'welcom message',
-             `welcome ${user.firstName} use <b style={color:red;}> ${hashedId}</b> as your secret to verify your account at our website`)
-
-        })
-
-    })
-
-    .catch((err)=>{res.status(400).json(`error adding new user : ${err}`)})
-
-
+    registerNewUser(req, res)
 })
 
 
@@ -405,36 +201,9 @@ router.post('/api/newuser', (req, res)=>{
 // type   post 
 // desc   user login using email & password
 
-router.post('/api/login' , (req, res)=>{
-    // find user by email
-    User.findOne({email : req.body.email})
-    .then((user)=>{
-        if(!user) return res.status(401).send('user not found')
-        // compare entered password with stored one
-        bcrypt.compare(req.body.password, user.password)
-        .then((matched)=>{
-            if(!matched) return res.status(401).send('email and password are not matched')
-            
-            //generate token for this login
-            let token = jwt.sign({id : user._id , email : user.email}, key.jwtKey, { expiresIn: 86400 })
-            let tokenDecode = jwt.decode(token)
-
-            //generate new userToken document
-            let newToken = new UserToken({
-                token,
-                user : user._id,
-                createdAt : tokenDecode.iat ,
-                expiresIn : tokenDecode.exp
-            })
-            newToken.save()
-            .then((tokenAdded)=>{
-                console.log(`token added : ${tokenAdded.token}`)
-            })
-            
-            res.send({ auth : true, token  })
-        })
-    })
-    .catch((e)=>{console.log(e);res.send('error')})
+router.post('/api/userlogin' , (req, res)=>{
+    
+    userLogin(req, res)
 })
 
 
@@ -448,7 +217,7 @@ router.get('/api/logout', function(req, res) {
   // type  get 
   // desc  show all users
 
-  router.get('/api/users', (req, res)=>{
+  router.get('/api/users', adminAuth, (req, res)=>{
       User.find()
       .then((users)=>{
           res.json(users)
@@ -575,16 +344,6 @@ router.post('/api/info', (req, res)=>{
 })
 
 
-// counter 
-router.post('/api/counter', (req, res)=>{
-    let newCounter = new Counter({
-        coll : req.body.coll,
-        count : req.body.count,
-    });
 
-    newCounter.save()
-    .then((cou)=>{console.log(`counter saved .. ${cou}`),res.json(cou)})
-    .catch((err)=>console.log(`error is : ${err}`))
-})
 
 export default router

@@ -2,13 +2,16 @@ import mongoose from 'mongoose'
 const Schema = mongoose.Schema 
 import Address from './shipAdd'
 import prepost from './pre-post'
+import shortId from 'shortid'
 
 
 
 
 const orderSchema = new Schema({
     orderId :{
-        type : Number,
+        type : String,
+        required: true,
+        default:shortId.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@')
     },
     done :{
         type :Boolean,

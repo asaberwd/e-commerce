@@ -1,5 +1,10 @@
 import Layout from './../component/layout/layout.js'
 import details from './../../details'
+import { connect } from 'react-redux'
+import update from 'react-addons-update'; // ES6
+import {Link} from './../routes'
+import CartItems from './../component/cartItems'
+
 
 class Cart extends React.Component{
 
@@ -7,81 +12,35 @@ class Cart extends React.Component{
 		super(props)
 
 		this.state = {
-			cart : []
+			cart : [],
+			total : 0
 		}
 
-		this.singpro = this.singpro.bind(this)
-		this.onClick = this.onClick.bind(this)
 
 	}
 
+	componentWillMount(){
+		
+		
+		setTimeout(()=>{
 
-	componentDidMount(){
-        let pnu = JSON.parse( localStorage.getItem('cart') )
-     
-         if(pnu) {
-             this.setState({
-                 cart : pnu
-             })
-         }
-		 
-	  } 
-
-	  onClick(e){
-		  e.preventDefault()
-		  let key = parseInt( e.target.name )
-		  let oldcart = this.state.cart
-		  oldcart.splice( key, 1)
-		  this.setState({
-			  cart : oldcart
-		  })
-		  localStorage.setItem('cart', JSON.stringify(this.state.cart) )
-	  }
+			let tot = 0
+			for(let i = 0; i < this.props.cartState.length;i++){
+				tot += this.props.cartState[i].total
+			}
+			this.setState({
+				cart : this.props.cartState,
+				total : tot
+			})
+		},1000)
+        
+		
+	}
 	  
-	  singpro(){
-		  return this.state.cart.map((pro , i)=>{
-			  return(
-				<div className="product-cart" key={i}>
-				<div className="one-forth">
-					<div className="product-img" style={{backgroundImage: `url(${pro.pic})`}}>
-					</div>
-					<div className="display-tc">
-						<h3>{pro.pro}</h3>
-					</div>
-				</div>
-				<div className="one-eight text-center">
-					<div className="display-tc">
-						<span className="price">${pro.price}</span>
-					</div>
-				</div>
-				<div className="one-eight text-center">
-					<div className="display-tc">
-						<input type="number" id="quantity" name="quantity" className="form-control input-number text-center" 
-						value={pro.qua} readOnly min="1" max="100" />
-					</div>
-				</div>
-				<div className="one-eight text-center">
-					<div className="display-tc">
-						<span className="price">${(pro.price * pro.qua)}</span>
-					</div>
-				</div>
-				<div className="one-eight text-center">
-					<div className="display-tc">
-						<a href="#" className="closed" name={i} onClick={this.onClick}></a>
-					</div>
-				</div>
-			</div>
-			  )
-		  })
-	  }
 
 render(){ 
-	console.log(this.state.cart)
 	return (
 		<Layout>
-					<div className="container">
-					<h1>{details.title}</h1>
-					<p>{details.describtion}</p>
 		
 					<div className="colorlib-shop">
 					<div className="container">
@@ -122,9 +81,15 @@ render(){
 										<span>Remove</span>
 									</div>
 								</div>
-								{this.singpro()}
+
+								<CartItems />
 							
 							</div>
+							<div className="col-md-6"></div>
+							<div className="col-md-3">
+								<input type="submit" value="Update Cart" className="btn btn-primary" />
+							</div>
+							
 						</div>
 						<div className="row">
 							<div className="col-md-10 col-md-offset-1">
@@ -137,23 +102,28 @@ render(){
 														<input type="text" name="quantity" className="form-control input-number" 
 														placeholder="Your Coupon Number..." />
 													</div>
-													<div className="col-md-3">
-														<input type="submit" value="Apply Coupon" className="btn btn-primary" />
-													</div>
 												</div>
 											</form>
+											<div className="col-md-3">
+														<input type="submit" value="Apply Coupon" className="btn btn-primary" />
+													</div>
 										</div>
 										<div className="col-md-3 col-md-push-1 text-center">
 											<div className="total">
 												<div className="sub">
-													<p><span>Subtotal:</span> <span>$200.00</span></p>
-													<p><span>Delivery:</span> <span>$0.00</span></p>
-													<p><span>Discount:</span> <span>$45.00</span></p>
+													<p><span>Subtotal:</span> <span>${this.state.total}</span></p>
+													<p><span>Delivery:</span> <span>$15.00</span></p>
+													<p><span>Discount:</span> <span>$00.00</span></p>
 												</div>
 												<div className="grand-total">
-													<p><span><strong>Total:</strong></span> <span>$450.00</span></p>
+													<p><span><strong>Total:</strong></span> <span>${this.state.total + 15}</span></p>
 												</div>
 											</div>
+
+											<div>
+											<Link route="checkout.html"><input type="submit" value="Proceed To Checkout" className="btn btn-primary" /></Link>
+											</div>
+
 										</div>
 									</div>
 								</div>
@@ -162,11 +132,16 @@ render(){
 					</div>
 				</div>
 		
-		</div>
 	</Layout> )
 }
 
 }
 
+const mapStateToProps = (state)=>({
+	cartState : state.cart
+})
 
-export default Cart
+
+
+
+export default connect (mapStateToProps)(Cart)

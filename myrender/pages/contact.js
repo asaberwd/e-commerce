@@ -11,9 +11,6 @@ export default class Contact extends React.Component {
 
             <Layout>
                 <div id="colorlib-contact">
-			<div className="container">
-            <h1>{details.title}</h1>
-            <p>{details.describtion}</p>
 				<div className="row">
 					<div className="col-md-10 col-md-offset-1">
 						<h3>Contact Information</h3>
@@ -75,7 +72,6 @@ export default class Contact extends React.Component {
 					</div>
 				</div>
 			</div>
-		</div>
 
             </Layout>
         )

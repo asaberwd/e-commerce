@@ -2,15 +2,17 @@ import mongoose from 'mongoose'
 const Schema = mongoose.Schema
 import Address from './shipAdd'
 import validator from 'validator'
-import prepost from './pre-post'
+import shortId from 'shortid'
+//import prepost from './pre-post'
 
 
 
 
 const userSchema = new Schema({
     userId:{
-        type :Number,
+        type :String,
         unique : true,
+        default : shortId.generate
     },
     firstName : {
         type : String,
@@ -60,9 +62,9 @@ const userSchema = new Schema({
 });
 
 
-prepost.myPre(userSchema , 'user' , 'userId')
+//prepost.myPre(userSchema , 'user' , 'userId')
 
-prepost.myPost(userSchema , 'user' )
+//prepost.myPost(userSchema , 'user' )
 
 
 

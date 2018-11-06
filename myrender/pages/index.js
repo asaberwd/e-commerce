@@ -1,37 +1,47 @@
 import fetch from 'isomorphic-unfetch'
-import Layout from './../component/layout/layout.js'
-import details from './../../details'
-import Product from './../component/product'
+import Layout from './../component/layout/layout'
+import Products from './../component/products'
+
+import withRedux from 'next-redux-wrapper';
+import initializeStore from './../store.js';
+
+import { connect } from 'react-redux'
+import SearchBar from './../component/seachBar'
+
+class Index extends React.Component{
+
+    componentDidMount(){
+        
+    }
+    
+
+    static async getInitialProps(){
+        const res = await fetch('http://localhost:8080/api/viewproducts')
+        const data = await res.json()
+        return { data }
+    }
 
 
- const Index =  (props)=> (
-    <div>
-        <Layout>
-
-            <div className="container">
-        <h1>{details.title}</h1>
-        <p>{details.describtion}</p>
-
-        <div className="row">
-       { props.data.map((pro, key)=>{
-                  return <Product key={key} pro={pro} />
-                  }) }
-        </div>
-
-            </div>
-
-        </Layout>
-    </div>
-)
+    render(){
+        console.log(this.props)
+        return(
+            <Layout>
+                <SearchBar />
+        
+            <Products data={this.props.data}/>
+    
+                
+            </Layout>
+        )
+    }
 
 
-
-Index.getInitialProps = async function(){
-    const res = await fetch('http://localhost:8080/api/products')
-    const data = await res.json()
-
-    return { data }
 }
 
+const mapStateToProps = (state)=>({
+    cartState : state.cart
+})
 
-export default Index
+ 
+
+export default connect(mapStateToProps)(Index)

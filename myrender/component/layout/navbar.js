@@ -1,4 +1,6 @@
 import {Link} from './../../routes'
+import { connect } from 'react-redux'
+import {iniCart} from './../../actions/cartActions'
 
  class Nav extends React.Component {
 
@@ -10,6 +12,10 @@ import {Link} from './../../routes'
     }
 
     componentDidMount(){
+
+        let k = JSON.parse(localStorage.getItem('cart'))
+        this.props.incart(k)
+        
         let cart = localStorage.getItem('cart')
         if(cart){ 
         this.setState({
@@ -21,65 +27,73 @@ import {Link} from './../../routes'
 
     render(){
     return(
-        <nav className="navbar navbar-expand-lg navbar-light bg-primary">
-        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
-        </button>
-        <Link route="index">
-        <a className="navbar-brand" >Brandat</a>
-        </Link>
 
-        <div className="collapse navbar-collapse" id="navbarTogglerDemo03">
-            <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
-            <li className="nav-item active">
-            <Link route="index">
-            <a className="nav-link" >Home <span className="sr-only">(current)</span></a>
-            </Link>
-            </li>
+    <nav className="colorlib-nav" role="navigation">
+        <div className="top-menu">
+        <div className="container">
+        <div className="row">
+        
+            <div className="col-xs-2">
+                <div id="colorlib-logo"><Link route="index">Store</Link></div>
+            </div>
 
-            <li className="nav-item">
-            <Link route="cart">
-                <a className="nav-link">Cart</a>
-            </Link>
-            </li>
+            <div className="col-xs-10 text-right menu-1" >
+                <ul>
 
-            <li className="nav-item">
-            <Link route="/" >
-                <a className="nav-link">Men</a>
-            </Link>
-            </li>
+                <li><a href="index.html">Home</a></li>
 
-            <li className="nav-item">
-            <Link route="contact">
-                <a className="nav-link">contact us</a>
-            </Link>
-            </li>
+                <li className="has-dropdown">
+                    <a href="shop.html">Shop</a>
+                        <ul className="dropdown">
+                            <li><Link route="cart.html">Shipping Cart</Link></li>
+                            <li><Link route="checkout.html">Checkout</Link></li>
+                            <li><Link route="order-complete.html">Order Complete</Link></li>
+                            <li><Link route="wishlist.html">Wishlist</Link></li>
+                        </ul>
+                </li>
 
-            <li className="nav-item">
-            <Link route="checkOut">
-                <a className="nav-link">check out</a>
-            </Link>
-            </li>
+                    <li className="nav-item">
+                        <Link route="contact">
+                            <a >contact us</a>
+                        </Link>
+                    </li>
 
-            <li className="nav-item">
-            <Link route="about">
-                <a className="nav-link">About Us</a>
-            </Link>
-            </li>
 
-            <li className="nav-item">
-            <Link route="cart"><a className="nav-link">
-                <i className="icon-shopping-cart"></i> Cart [{this.props.cartlen || this.state.cart.length}] </a>
-            </Link>
-            </li>
+                    <li>
+                        <Link route="about">
+                            <a>About Us</a>
+                        </Link>
+                    </li>
 
-            </ul>
-            
+                    <li>
+                        <Link route="cart">
+                        <a >
+                            <i className="icon-shopping-cart"></i> Cart [{this.props.cartState.length || 0 }] 
+                        </a>
+                        </Link>
+                    </li>
+
+                </ul>
+            </div>
+
         </div>
-        </nav>
+        </div>
+        </div>
+    </nav> 
+            
     )
     }
 }
 
-export default Nav
+const mapStateToProps = (state)=>({
+    cartState : state.cart
+})
+
+const mapDispatchToProps =(dispatch)=>({
+    incart : (cat)=>(dispatch(iniCart(cat)))
+  })
+
+ 
+
+export default connect (mapStateToProps, mapDispatchToProps)(Nav)
 
