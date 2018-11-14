@@ -1,14 +1,18 @@
-import Product from './../models/product.mjs'
-import Category from './../models/category.mjs'
-import User from './../models/user.mjs'
+import Product from './../../models/product.mjs'
+import Category from './../../models/category.mjs'
+import User from './../../models/user.mjs'
+
 
 import validator from 'validator'
 import bcrypt from 'bcryptjs'
-import sendMail from './../../helpers/sendMail'
 
-import UserToken from './../models/userToken.mjs'
+
+
+import { sendGreetMail, receiveMail } from './../../../helpers/sendMail'
+
+import UserToken from './../../models/userToken.mjs'
 import jwt from 'jsonwebtoken'
-import key from './../../config/keys.mjs'
+import key from './../../../config/keys.mjs'
 
 
 
@@ -18,7 +22,7 @@ import key from './../../config/keys.mjs'
 
 
 export const viewAllProducts = (req, res)=>{
-    
+
     Product.find().sort({_id:-1})
     .populate('category')
     .then((pros)=>{
@@ -78,9 +82,8 @@ export const registerNewUser = (req, res)=>{
           res.json('new user created')
           console.log(user)
           let hashedId = bcrypt.hashSync(user._id.toString(), 8)
-          sendMail(user.email, 'welcom message',
+          sendGreetMail(user.email, 'welcom message',
            `welcome ${user.firstName} use <b style={color:red;}> ${hashedId}</b> as your secret to verify your account at our website`)
-
       })
 
   })
@@ -102,7 +105,7 @@ export const userLogin = (req, res)=>{
             if(!matched) return res.status(401).send('email and password are not matched')
             
             //generate token for this login
-            let token = jwt.sign({id : user._id , email : user.email}, key.jwtKey, { expiresIn: 86400 })
+            let token = jwt.sign({id : user._id , email : user.email, addresses : user.shipaddress }, key.jwtKey, { expiresIn: 86400 })
             let tokenDecode = jwt.decode(token)
 
             //generate new userToken document
@@ -116,7 +119,7 @@ export const userLogin = (req, res)=>{
             .then((tokenAdded)=>{
                 console.log(`token added : ${tokenAdded.token}`)
             })
-            
+            res.cookie("token",token , { maxAge: 90000000, httpOnly: false })
             res.json({ auth : true, token  })
         })
     })
@@ -124,5 +127,21 @@ export const userLogin = (req, res)=>{
 }
 
 
+export const userSendMail = (req, res)=>{
+    let {firstName, lastName, email, subject, message} = req.body
+    receiveMail(res,firstName, lastName, email, subject, message)
+}
+
+
+export const adminViewUsers = async(req, res)=>{
+    let viewUsers = await User.find()
+    try{
+        if(!viewUsers)return res.json('no users')
+        res.json(viewUsers)
+    }catch(err){
+        res.status(401).json(err)
+    }
+
+}
 
 

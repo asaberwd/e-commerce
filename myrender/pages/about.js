@@ -1,14 +1,8 @@
 import Layout from './../component/layout/layout.js'
-import details from './../../details'
 
-import {connect} from 'react-redux'
 
 class About extends React.Component{
 
-	constructor(){
-		super()
-
-	}
 
 render(){ 
 	return (
@@ -68,4 +62,4 @@ render(){
 }
 
 
-export default connect()(About)
+export default About

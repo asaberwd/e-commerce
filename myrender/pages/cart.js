@@ -1,27 +1,31 @@
 import Layout from './../component/layout/layout.js'
-import details from './../../details'
 import { connect } from 'react-redux'
 import update from 'react-addons-update'; // ES6
 import {Link} from './../routes'
 import CartItems from './../component/cartItems'
+import cookie from 'js-cookie'
+import jwt from 'jsonwebtoken'
 
 
 class Cart extends React.Component{
 
 	constructor(props){
 		super(props)
+		this.k = jwt.decode(cookie.get('token'))
+		
 
 		this.state = {
 			cart : [],
-			total : 0
+			total : 0,
+			token : this.k
 		}
-
+		console.log(this.state.token)
 
 	}
 
-	componentWillMount(){
+	componentDidMount(){
 		
-		
+
 		setTimeout(()=>{
 
 			let tot = 0
@@ -39,6 +43,7 @@ class Cart extends React.Component{
 	  
 
 render(){ 
+	
 	return (
 		<Layout>
 		
@@ -121,7 +126,7 @@ render(){
 											</div>
 
 											<div>
-											<Link route="checkout.html"><input type="submit" value="Proceed To Checkout" className="btn btn-primary" /></Link>
+											<Link route={this.state.token ? "c" : "checkOut"}><input type="submit" value="Proceed To Checkout" className="btn btn-primary" /></Link>
 											</div>
 
 										</div>

@@ -237,7 +237,7 @@ class checkOut extends React.Component {
 }
 
 const mapStateToProps = (state)=>({
-   cartState : state.cart
+   cartState : state.cart.items
 })
 
 export default connect (mapStateToProps)(checkOut)

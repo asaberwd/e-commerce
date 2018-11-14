@@ -290,7 +290,7 @@ function (_App) {
     key: "componentDidMount",
     value: function componentDidMount() {
       var k = JSON.parse(localStorage.getItem('cart'));
-      if (k === null) localStorage.setItem('cart', '[]');
+      if (k === null) localStorage.setItem('cart', '{}');
     }
   }, {
     key: "render",
@@ -334,31 +334,57 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var cartReducer = function cartReducer() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+    items: []
+  };
   var action = arguments.length > 1 ? arguments[1] : undefined;
 
   switch (action.type) {
     case 'INI_CART':
-      return action.payload;
+      if (action.payload === null) return state;
+      return _objectSpread({}, state, {
+        items: action.payload.items
+      });
 
     case 'ADD_CART_ITEM':
-      var newstate = state;
+      var newstate = state.items;
+
+      if (newstate.length === 0) {
+        return _objectSpread({}, state, {
+          items: [action.payload]
+        });
+      }
+
       var found = newstate.findIndex(function (item) {
         return item.pro === action.payload.pro;
       });
-      console.log('found: ', found);
 
       if (found !== -1) {
         newstate[found].qua += action.payload.qua;
         newstate[found].total = newstate[found].qua * newstate[found].price;
-        return _toConsumableArray(newstate);
+        return {
+          items: _toConsumableArray(newstate)
+        };
       } else {
-        return _toConsumableArray(state).concat([action.payload]);
+        return {
+          items: _toConsumableArray(state.items).concat([action.payload])
+        };
       }
 
     case 'REMOVE_CART_ITEM':
-      return _toConsumableArray(action.payload);
+      return _objectSpread({}, state, {
+        items: _toConsumableArray(action.payload)
+      });
+
+    case 'ADD-ADDRESS':
+      return _objectSpread({}, state, {
+        address: action.payload
+      });
 
     default:
       return state;

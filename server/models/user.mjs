@@ -62,11 +62,6 @@ const userSchema = new Schema({
 });
 
 
-//prepost.myPre(userSchema , 'user' , 'userId')
-
-//prepost.myPost(userSchema , 'user' )
-
-
 
 
 

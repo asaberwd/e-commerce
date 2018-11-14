@@ -11,15 +11,11 @@
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/index": [
+    "/checkOut": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/singleProduct": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
-    "/": [
+    "/c": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ]

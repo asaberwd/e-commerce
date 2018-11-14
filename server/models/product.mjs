@@ -1,12 +1,12 @@
 import mongoose from 'mongoose'
 const Schema = mongoose.Schema
-import shortId from 'nanoid/generate'
+import generate from 'nanoid/generate'
 
 const productSchema = new Schema({
    proId : {
         type:String,
         unique : true,
-        default: shortId('1234567890abcdefghimnABCDEFGHIMNOY',7)  //characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@')
+        default: generate('1234567890abcdefghimnABCDEFGHIMNOY',7)  //characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@')
     },
     productName : {
         type : String ,
@@ -76,10 +76,6 @@ const productSchema = new Schema({
 })
 
 
-
-//prepost.myPre(productSchema , 'pro' , 'proId')
-
-//prepost.myPost(productSchema , 'pro' )
 
 
 

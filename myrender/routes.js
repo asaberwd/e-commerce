@@ -8,8 +8,10 @@ routes
 .add('login', '/login.html')
 .add('register', '/register.html')
 .add('checkOut', '/checkout.html')
+.add('c', '/c.html')
 .add('contact', '/contact.html')
 .add('singleProduct', '/:slug.html')
+
 
 
 

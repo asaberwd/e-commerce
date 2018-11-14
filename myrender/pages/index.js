@@ -10,20 +10,15 @@ import SearchBar from './../component/seachBar'
 
 class Index extends React.Component{
 
-    componentDidMount(){
-        
-    }
-    
-
     static async getInitialProps(){
         const res = await fetch('http://localhost:8080/api/viewproducts')
         const data = await res.json()
+        
         return { data }
     }
 
 
     render(){
-        console.log(this.props)
         return(
             <Layout>
                 <SearchBar />
@@ -39,7 +34,7 @@ class Index extends React.Component{
 }
 
 const mapStateToProps = (state)=>({
-    cartState : state.cart
+    cartState : state.cart.items
 })
 
  

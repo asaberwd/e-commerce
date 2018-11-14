@@ -18,8 +18,10 @@ import {iniCart} from './../../actions/cartActions'
         
         let cart = localStorage.getItem('cart')
         if(cart){ 
+            let obj = JSON.parse(cart)
+            let itemsarr = obj.items
         this.setState({
-            cart : JSON.parse(cart)
+            cart : itemsarr
         })
     }
     }
@@ -40,7 +42,10 @@ import {iniCart} from './../../actions/cartActions'
             <div className="col-xs-10 text-right menu-1" >
                 <ul>
 
-                <li><a href="index.html">Home</a></li>
+                <li><Link route="/">
+                    <a >Home</a>
+                </Link>
+                </li>
 
                 <li className="has-dropdown">
                     <a href="shop.html">Shop</a>
@@ -68,7 +73,7 @@ import {iniCart} from './../../actions/cartActions'
                     <li>
                         <Link route="cart">
                         <a >
-                            <i className="icon-shopping-cart"></i> Cart [{this.props.cartState.length || 0 }] 
+                            <i className="icon-shopping-cart"></i> Cart [{this.props.cartState.items.length || 0 }] 
                         </a>
                         </Link>
                     </li>

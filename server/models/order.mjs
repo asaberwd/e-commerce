@@ -1,8 +1,6 @@
 import mongoose from 'mongoose'
 const Schema = mongoose.Schema 
 import Address from './shipAdd'
-import prepost from './pre-post'
-import shortId from 'shortid'
 
 
 
@@ -11,13 +9,15 @@ const orderSchema = new Schema({
     orderId :{
         type : String,
         required: true,
-        default:shortId.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@')
+        unique : true,
     },
     done :{
         type :Boolean,
+        default : false
     },
     paid : {
         type : Boolean,
+        default : false
     },
     paymentMethode :{
         type : String,
@@ -28,9 +28,11 @@ const orderSchema = new Schema({
     },
     totalweight:{
         type:Number,
+        default : 0
     },
     totalprice:{
         type:Number,
+        required : true
     },
     shipAddress : Address ,
     user : {
@@ -44,9 +46,7 @@ const orderSchema = new Schema({
 
 });
 
-prepost.myPre(orderSchema , 'order' , 'orderId')
 
-prepost.myPost(orderSchema , 'order' )
 
 
 const Order = mongoose.model('Order', orderSchema);

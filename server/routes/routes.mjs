@@ -17,14 +17,12 @@ import info from './../../details.mjs'
 
 
 
-import {addnewAdmin, adminLogin, addNewProduct, editProduct, showAllProducts, showSingleCategory, showProductBySlug,
-     deleteProduct, addNewCategory, showCategoriesByAdmin, getCatsByCatId, getProductsByCategory,
-     deleteCatByCatId, updatePro } from './bus'
+import { addnewAdmin, adminLogin } from './log/adminRoutes.mjs'
 
-import { viewAllProducts, showAllCats, userLogin, registerNewUser } from './user-bus'
-
-
-
+import { addNewCategory, showCategoriesByAdmin, getCatsByCatId, updateCategory,deleteCatByCatId } from './log/categoryRoutes.mjs'
+import { viewAllProducts, showAllCats, userLogin, registerNewUser, userSendMail, adminViewUsers  } from './log/userRoutes.mjs'
+import { addNewProduct, showAllProducts, deleteProduct, editProduct, showProductsByCategory, showProductByProId, showProductBySlug } from './log/productRoutes.mjs'
+import { createNewOrder, viewAllOrders} from './log/orderRoutes.mjs'
 
 
 
@@ -47,8 +45,14 @@ router.post('/api/admin/login' , (req, res)=>{
     adminLogin(req,res)
 })
 
+//---------- admin product routes ---------
 
+// type   get
+// desc   view all users
 
+router.get('/api/viewusers', adminAuth, (req, res)=>{
+    adminViewUsers(req, res)
+})
 
 // type   post
 // desc   add new product   
@@ -84,7 +88,7 @@ router.get('/api/products', adminAuth,(req, res)=>{
 
 
 router.get('/api/product/:id', (req, res)=>{
-    showSingleCategory(req, res)
+    showProductByProId(req, res)
 })
 
 
@@ -139,7 +143,7 @@ router.get('/api/category/:id', adminAuth, (req, res)=>{
 // desc  find all products in specific category
 
 router.get('/api/products/category/:id', async (req, res)=>{
-    getProductsByCategory(req, res)
+    showProductsByCategory(req, res)
 })
 
 
@@ -150,7 +154,7 @@ router.get('/api/products/category/:id', async (req, res)=>{
 
 router.patch('/api/category/:id', adminAuth, (req, res)=>{
     
-    updatePro(req, res)
+    updateCategory(req, res)
 })
 
 
@@ -171,7 +175,6 @@ router.delete('/api/category/:id', adminAuth, (req, res)=>{
 // desc  show all products to users
 
 router.get('/api/viewproducts', (req, res)=>{
-    
     viewAllProducts(req, res)
 })
 
@@ -227,104 +230,6 @@ router.get('/api/logout', function(req, res) {
 
 
 
-  // ------- order products routes --------
-
-
-  // type   post
-  // desc   add new product to cart
-
-  router.post('/api/addcartitem/:id', authen, (req, res)=>{
-      
-    Product.findOne({_id:req.params.id})
-    .then((pro)=>{
-        let neworderProduct = new orderProduct({
-            quantity : req.body.quantity,
-            price : pro.unitPrice,
-            discount : pro.discount,
-            product : pro._id,
-            user : res.locals.userId
-        })
-
-        neworderProduct.total = (neworderProduct.price * neworderProduct.quantity) -  neworderProduct.discount
-        neworderProduct.weight = neworderProduct.quantity * pro.weight
-
-        neworderProduct.save()
-        .then((cartPro)=>{
-            console.log(cartPro)
-            res.json('cart product added succesfully')
-        })
-    })
-    .catch((err)=>{
-        res.status(401).json({error : err})
-        console.log(err)
-    })
-  })
-
-
-
-  // type   get
-  // desc   view all cart products
-
-router.get('/api/cart', authen, (req, res)=>{
-    if(!res.locals.userId) return res.status(404).json('unauthorized')
-    orderProduct.find({user : res.locals.userId , order : null})
-    .then(products =>{
-        if(!products) return res.status(404).json('cart is empty')
-        console.log(products)
-        res.json(products)
-    })
-    .catch(err=>{console.log(err);res.status(404).json(err)})
-})
-
-
-
-// type  patch
-// desc  update quantity of product in cart
-
-
-  router.patch('/api/cartitem/:id', authen,  (req, res)=>{
-      
-      let quantity = req.body.quantity
-      if(quantity < 1 || quantity === null) return res.status(401).json('you must enter quantity more than 0')
-      let id = req.params.id
-      orderProduct.findById(id).populate('product')
-      .then( ordpro=>{
-        if(!ordpro) return res.status(404).json('item not found to update quantity !')
-
-          orderProduct.findOneAndUpdate({_id : id, user: res.locals.userId },
-             {$set :{ quantity, total : (ordpro.product.unitPrice * quantity) , weight : (ordpro.product.weight * quantity)  }},
-                {new : true} )
-             .then(updated =>{
-                 if(!updated) return res.status(404).json('item not found to edit or you ar not authorised')
-                 res.json(updated)
-                 console.log(updated)
-             })
-      })
-      .catch((err)=>{
-        res.status(401).json({error : err})
-        console.log(err)
-    })
-      
-  })
-
-
-   // type  delete
-  // desc  remove product from cart
-
-  router.delete('/api/cartitem/:id', authen, (req, res)=>{
-      
-    orderProduct.findOneAndDelete({_id:req.params.id, user: res.locals.userId})
-    .then((del)=>{
-        if(!del) return res.status(404).json('item not found to delete or you are not authorized !')
-        res.json('item deleted')
-        console.log(`item deleted was : ${del}`)
-    })
-    .catch((err)=>{
-      res.status(401).json({error : err})
-      console.log(err)
-  })
-})
-
 
 
 
@@ -343,6 +248,24 @@ router.post('/api/info', (req, res)=>{
     
 })
 
+
+
+router.post('/api/contactus', (req, res)=>{
+    userSendMail(req, res)
+})
+
+
+// order routes start here
+
+
+router.post('/api/newOrder', (req, res)=>{
+    createNewOrder(req, res)
+})
+
+
+router.get('/api/viewallorders', adminAuth, (req, res)=>{
+    viewAllOrders(req, res)
+})
 
 
 
