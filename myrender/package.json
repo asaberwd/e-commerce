@@ -1,0 +1,35 @@
+{
+  "name": "serverrender",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"next -p5000\" \"npm run test\" ",
+    "nxt": "next -p5000",
+    "build": "next build",
+    "start": "next start",
+    "test": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@zeit/next-css": "^1.0.1",
+    "axios": "^0.18.0",
+    "concurrently": "^4.0.1",
+    "cookie": "^0.3.1",
+    "express": "^4.16.3",
+    "isomorphic-unfetch": "^3.0.0",
+    "js-cookie": "^2.2.0",
+    "jsonwebtoken": "^8.3.0",
+    "next": "^7.0.0",
+    "next-redux-wrapper": "^2.0.0",
+    "next-routes": "^1.4.2",
+    "react": "^16.5.2",
+    "react-addons-update": "^15.6.2",
+    "react-dom": "^16.5.2",
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.0",
+    "redux-devtools-extension": "^2.13.5",
+    "redux-thunk": "^2.3.0"
+  }
+}

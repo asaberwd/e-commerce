@@ -4,15 +4,20 @@ import Address from './shipAdd'
 
 
 
+
 const orderSchema = new Schema({
-    orderNumber :{
-        type : Number,
+    orderId :{
+        type : String,
+        required: true,
+        unique : true,
     },
     done :{
         type :Boolean,
+        default : false
     },
     paid : {
         type : Boolean,
+        default : false
     },
     paymentMethode :{
         type : String,
@@ -23,9 +28,11 @@ const orderSchema = new Schema({
     },
     totalweight:{
         type:Number,
+        default : 0
     },
     totalprice:{
         type:Number,
+        required : true
     },
     shipAddress : Address ,
     user : {
@@ -38,6 +45,9 @@ const orderSchema = new Schema({
     },
 
 });
+
+
+
 
 const Order = mongoose.model('Order', orderSchema);
 

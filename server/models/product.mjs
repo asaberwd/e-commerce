@@ -1,13 +1,20 @@
 import mongoose from 'mongoose'
-Schema = mongoose.Schema
+const Schema = mongoose.Schema
+import generate from 'nanoid/generate'
 
 const productSchema = new Schema({
-    id : {
-        type:Number,
+   proId : {
+        type:String,
+        unique : true,
+        default: generate('1234567890abcdefghimnABCDEFGHIMNOY',7)  //characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@')
     },
     productName : {
         type : String ,
         required : true,
+    },
+    slug:{
+        type:String,
+        unique:true,
     },
     prodDescription : {
         type : String ,
@@ -15,6 +22,7 @@ const productSchema = new Schema({
     unitPrice : {
         type : Number,
         required : true,
+        min:1,
     },
     color:{
         type : String,
@@ -39,8 +47,8 @@ const productSchema = new Schema({
     available :{
         type : Boolean,
     },
-    picture : {
-        type : String,
+    pictures : {
+        type : Array,
     },
     discount : {
         type : Number,
@@ -59,7 +67,7 @@ const productSchema = new Schema({
         type : Schema.Types.ObjectId,
         ref :'Order',
     }],
-    categoty :{
+    category :{
         type :Schema.Types.ObjectId,
         ref:'Category',
     },
@@ -67,6 +75,16 @@ const productSchema = new Schema({
 
 })
 
+
+
+
+
+
+
 const Product = mongoose.model('Product', productSchema );
 
+
 export default Product
+
+
+

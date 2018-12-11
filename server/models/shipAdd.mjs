@@ -3,20 +3,29 @@ const Schema = mongoose.Schema
 
 const address = new Schema({
     country : {
-        type : String 
+        type : String ,
+        required : true,
     },
     city:{
-        type:String
+        type:String,
+        required : true,
     },
-    fulladdress:{
-        type:String 
+    name :{
+        type: String,
+        required : true,
+    },
+    fullAddress:{
+        type:String ,
+        required : true,
     },
     phone:{
-        type:String
+        type:String,
+        required : true,
     },
-    postalcode:{
-        type :Number,
+    postalCode:{
+        type : Number,
+        required : true,
     }
 })
 
-module.exports = address ;
+export default address ;
